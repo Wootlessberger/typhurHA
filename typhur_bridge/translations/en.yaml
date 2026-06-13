@@ -17,6 +17,12 @@ configuration:
       The region your Typhur account is registered in.
       Use "eu" for Europe (default) or "us" for United States, Canada, Australia and New Zealand.
       Known regions: eu (api.iot.typhur.de), us (api.iot.typhur.com).
+  typhur_country:
+    name: Typhur Country Code (optional)
+    description: >-
+      Optional 2-letter ISO country code (x-region) for your Typhur account, e.g. "US", "GB", "DE", "NO".
+      Leave empty to use the region default ("NO" for eu, "US" for us).
+      Set this if login fails with "[x-region] invalid" — it must match the country your account is registered in.
   mqtt_host:
     name: MQTT Host
     description: Hostname or IP address of your Home Assistant MQTT broker. Default is "core-mosquitto" for the Mosquitto add-on.

@@ -33,6 +33,15 @@ TYPHUR_API_BY_REGION = {
     "eu": "https://api.iot.typhur.de",
     "us": "https://api.iot.typhur.com",
 }
+# Default ISO country code (x-region) per region. The Typhur API validates
+# x-region against the endpoint's region set, so it must match the user's
+# account country: the US endpoint rejects EU codes like "NO" and vice versa.
+TYPHUR_COUNTRY_BY_REGION = {
+    "eu": "NO",
+    "us": "US",
+}
+# Resolved at startup in TyphurBridge.__init__; overridable via typhur_country.
+TYPHUR_REGION_CODE = "NO"
 # Public signing constant extracted from the Typhur APK — not a secret
 TYPHUR_SIGN_CONSTANT = "7d02d81bd7f4483a9a0ac580f2b6ad44"
 APP_ID = "ap206cba3069ed4a11"
@@ -53,7 +62,7 @@ def sign_request(token, body_str="{}"):
     headers_sorted = [
         ("x-appId", APP_ID), ("x-appVersion", APP_VERSION),
         ("x-deviceSn", APP_DEVICE_SN), ("x-lang", "en_US"),
-        ("x-nonce", nonce), ("x-region", "NO"),
+        ("x-nonce", nonce), ("x-region", TYPHUR_REGION_CODE),
         ("x-timestamp", timestamp), ("x-token", token),
     ]
     parts = ";".join(f"{k}={v}" for k, v in headers_sorted)
@@ -348,9 +357,13 @@ class TyphurBridge:
     def __init__(self, options):
         self.options = options
         region = (options.get("typhur_region") or "eu").strip().lower()
-        global TYPHUR_API
+        global TYPHUR_API, TYPHUR_REGION_CODE
         TYPHUR_API = TYPHUR_API_BY_REGION.get(region, TYPHUR_API_BY_REGION["eu"])
-        log.info(f"Typhur API region: {region} → {TYPHUR_API}")
+        # x-region must be the account's ISO country code. Use an explicit
+        # override if given, otherwise fall back to the region's default.
+        country = (options.get("typhur_country") or "").strip().upper()
+        TYPHUR_REGION_CODE = country or TYPHUR_COUNTRY_BY_REGION.get(region, "NO")
+        log.info(f"Typhur API region: {region} → {TYPHUR_API} (x-region={TYPHUR_REGION_CODE})")
         self.token = resolve_token(options)
         self.ha_client = None
         self.typhur_client = None
