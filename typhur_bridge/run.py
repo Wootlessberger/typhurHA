@@ -412,7 +412,7 @@ class TyphurBridge:
                 log.error(f"Message error: {e}")
 
         def on_disconnect(client, userdata, rc, properties=None, reasonCode=None):
-            log.warning(f"Typhur MQTT disconnected (rc={rc}), reconnecting in 15s...")
+            log.warning(f"Typhur MQTT disconnected (rc={rc}), reconnecting in 5s...")
             time.sleep(5)
             #try:
             #    client.reconnect()
