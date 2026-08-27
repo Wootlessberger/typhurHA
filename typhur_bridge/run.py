@@ -385,14 +385,15 @@ class TyphurBridge:
         def on_connect(client, userdata, flags, rc, properties=None):
             if rc == 0:
                 for dev in self.devices:
-                    device_id = str(dev["deviceId"])
-                    device_model = dev.get("deviceModel", "WT03")
-                    #topic = f"device/{device_model}/{device_id}/pub"
-                    topic = f"device/{device_model}/{device_id}/#"
-                    client.subscribe(topic)
-                    log.info(f"Subscribed to: {topic}")
+                    device_id = str(dev["deviceId"])[cite: 3]
+                    device_model = dev.get("deviceModel", "WT03")[cite: 3]
+                    
+                    # Use exact /sub topic allowed by AWS IoT IAM policy
+                    topic = f"device/{device_model}/{device_id}/sub"
+                    client.subscribe(topic)[cite: 3]
+                    log.info(f"Subscribed to: {topic}")[cite: 3]
             else:
-                log.error(f"Typhur MQTT connection failed: rc={rc}")
+                log.error(f"Typhur MQTT connection failed: rc={rc}")[cite: 3]
 
         def on_message(client, userdata, msg):
             try:
@@ -412,7 +413,7 @@ class TyphurBridge:
 
         def on_disconnect(client, userdata, rc, properties=None, reasonCode=None):
             log.warning(f"Typhur MQTT disconnected (rc={rc}), reconnecting in 15s...")
-            #time.sleep(15)
+            time.sleep(5)
             #try:
             #    client.reconnect()
             #except Exception as e:
