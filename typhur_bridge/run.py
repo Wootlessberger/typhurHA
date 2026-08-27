@@ -387,7 +387,8 @@ class TyphurBridge:
                 for dev in self.devices:
                     device_id = str(dev["deviceId"])
                     device_model = dev.get("deviceModel", "WT03")
-                    topic = f"device/{device_model}/{device_id}/pub"
+                    #topic = f"device/{device_model}/{device_id}/pub"
+                    topic = f"device/{device_model}/{device_id}/#"
                     client.subscribe(topic)
                     log.info(f"Subscribed to: {topic}")
             else:
@@ -420,6 +421,7 @@ class TyphurBridge:
         self.typhur_client = mqtt.Client(
             mqtt.CallbackAPIVersion.VERSION2,
             client_id=client_id
+            protocol=mqtt.MQTTv311
         )
         self.typhur_client.on_connect = on_connect
         self.typhur_client.on_message = on_message
