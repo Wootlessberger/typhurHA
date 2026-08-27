@@ -384,15 +384,10 @@ class TyphurBridge:
     def setup_typhur_mqtt(self, client_id, broker, port):
         def on_connect(client, userdata, flags, rc, properties=None):
             if rc == 0:
-                for dev in self.devices:
-                    device_id = str(dev["deviceId"])
-                    device_model = dev.get("deviceModel", "WT03")
-                    topic = f"device/{device_model}/{device_id}/pub"
-                    client.subscribe(topic)
-                    log.info(f"Subscribed to: {topic}")
+                log.info("Successfully connected to Typhur MQTT Broker")
             else:
                 log.error(f"Typhur MQTT connection failed: rc={rc}")
-
+    
         def on_message(client, userdata, msg):
             try:
                 data = json.loads(msg.payload.decode())
@@ -400,7 +395,6 @@ class TyphurBridge:
                     device_id = str(dev["deviceId"])
                     device_model = dev.get("deviceModel", "WT03")
                     
-                    # Match base topic structure regardless of /pub or /status ending
                     base_topic = f"device/{device_model}/{device_id}"
                     if msg.topic.startswith(base_topic):
                         state_topic = f"typhur/{device_id}/state"
@@ -408,30 +402,34 @@ class TyphurBridge:
                         break
             except Exception as e:
                 log.error(f"Message error: {e}")
-
+    
         def on_disconnect(client, userdata, rc, properties=None, reasonCode=None):
-            log.warning(f"Typhur MQTT disconnected (rc={rc}), reconnecting in 5s...")
-            time.sleep(5)
-            try:
-                client.reconnect()
-            except Exception as e:
-                log.error(f"Reconnect failed: {e}")
-
+            log.warning(f"Typhur MQTT disconnected (rc={rc})")
+    
         self.typhur_client = mqtt.Client(
             mqtt.CallbackAPIVersion.VERSION2,
             client_id=client_id,
-            protocol=mqtt.MQTTv311
+            protocol=mqtt.MQTTv311,
+            clean_session=True
         )
         self.typhur_client.on_connect = on_connect
         self.typhur_client.on_message = on_message
         self.typhur_client.on_disconnect = on_disconnect
-
+    
         ssl_ctx = ssl.create_default_context()
         ssl_ctx.load_cert_chain(CERT_FILE, KEY_FILE)
         self.typhur_client.tls_set_context(ssl_ctx)
-        self.typhur_client.connect(broker, port, 60)
+        self.typhur_client.connect(broker, port, keepalive=30)
         self.typhur_client.loop_start()
-        log.info("Connected to Typhur cloud MQTT")
+        
+        # Give TLS handshake 2 seconds to complete before subscribing
+        time.sleep(2)
+        for dev in self.devices:
+            device_id = str(dev["deviceId"])
+            device_model = dev.get("deviceModel", "WT03")
+            topic = f"device/{device_model}/{device_id}/pub"
+            self.typhur_client.subscribe(topic)
+            log.info(f"Subscribed to: {topic}")
 
     def run(self):
         log.info("=== Typhur Bridge starting ===")
