@@ -134,6 +134,7 @@ def resolve_token(options):
 
     raise Exception(
         "No token found. Set 'typhur_email' + 'typhur_password', or provide 'typhur_token' directly."
+        
     )
 
 
@@ -253,8 +254,8 @@ def get_devices(token):
 
 def publish_discovery(ha_client, device):
     device_id = str(device["deviceId"])
-    device_name = device.get("deviceName", "Typhur Sync Quad")
-    device_model = device.get("deviceModel", "WT08")
+    device_name = device.get("deviceName", "Typhur Sync Dual")
+    device_model = device.get("deviceModel", "WT03")
     state_topic = f"typhur/{device_id}/state"
 
     device_info = {
@@ -266,7 +267,7 @@ def publish_discovery(ha_client, device):
 
     probes = (device.get("lastStatusCmd") or {}).get("cmdData", {}).get("probes", [])
     if not probes:
-        probes = [{"probeColor": f"probe{i}"} for i in range(1, 5)]
+        probes = [{"probeColor": f"probe{i}"} for i in range(1, 3)]
 
     sensors = []
 
