@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Typhur Bridge - Home Assistant Add-on
-Connects Typhur Sync Quad thermometer to Home Assistant via MQTT auto-discovery.
+Connects Typhur Sync Dual thermometer to Home Assistant via MQTT auto-discovery.
 Fetches MQTT certificates automatically from the Typhur API.
 """
 import json
@@ -386,7 +386,7 @@ class TyphurBridge:
             if rc == 0:
                 for dev in self.devices:
                     device_id = str(dev["deviceId"])
-                    device_model = dev.get("deviceModel", "WT08")
+                    device_model = dev.get("deviceModel", "WT03")
                     topic = f"device/{device_model}/{device_id}/pub"
                     client.subscribe(topic)
                     log.info(f"Subscribed to: {topic}")
@@ -400,7 +400,7 @@ class TyphurBridge:
                     return
                 for dev in self.devices:
                     device_id = str(dev["deviceId"])
-                    device_model = dev.get("deviceModel", "WT08")
+                    device_model = dev.get("deviceModel", "WT03")
                     if f"device/{device_model}/{device_id}/pub" == msg.topic:
                         state_topic = f"typhur/{device_id}/state"
                         self.ha_client.publish(state_topic, msg.payload.decode())
