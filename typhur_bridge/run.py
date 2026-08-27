@@ -409,11 +409,11 @@ class TyphurBridge:
 
         def on_disconnect(client, userdata, rc, properties=None, reasonCode=None):
             log.warning(f"Typhur MQTT disconnected (rc={rc}), reconnecting in 15s...")
-            time.sleep(15)
-            try:
-                client.reconnect()
-            except Exception as e:
-                log.error(f"Reconnect failed: {e}")
+            #time.sleep(15)
+            #try:
+            #    client.reconnect()
+            #except Exception as e:
+            #    log.error(f"Reconnect failed: {e}")
 
         self.typhur_client = mqtt.Client(
             mqtt.CallbackAPIVersion.VERSION2,
