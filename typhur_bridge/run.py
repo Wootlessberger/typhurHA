@@ -396,12 +396,13 @@ class TyphurBridge:
         def on_message(client, userdata, msg):
             try:
                 data = json.loads(msg.payload.decode())
-                if "status:report" not in data.get("cmdType", ""):
-                    return
                 for dev in self.devices:
                     device_id = str(dev["deviceId"])
                     device_model = dev.get("deviceModel", "WT03")
-                    if f"device/{device_model}/{device_id}/pub" == msg.topic:
+                    
+                    # Match base topic structure regardless of /pub or /status ending
+                    base_topic = f"device/{device_model}/{device_id}"
+                    if msg.topic.startswith(base_topic):
                         state_topic = f"typhur/{device_id}/state"
                         self.ha_client.publish(state_topic, msg.payload.decode())
                         break
