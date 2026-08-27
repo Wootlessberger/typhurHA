@@ -420,7 +420,7 @@ class TyphurBridge:
 
         self.typhur_client = mqtt.Client(
             mqtt.CallbackAPIVersion.VERSION2,
-            client_id=client_id
+            client_id=client_id,
             protocol=mqtt.MQTTv311
         )
         self.typhur_client.on_connect = on_connect
