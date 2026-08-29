@@ -458,22 +458,19 @@ class TyphurBridge:
                 seen.add(color)
 
     def subscribe_all(self, client):
-        # The deviceModel comes straight from the API (device/bind/list), so this
-        # stays model-agnostic — but the topic MUST contain the real model, not a
-        # wildcard: AWS IoT closes the connection if the cert's policy doesn't
-        # authorize the exact topic filter, and '+' is not authorized.
         for dev in self.devices:
-            model = dev.get("deviceModel")
-            if not model:
-                model = "WT08"
+            topics = dev.get("subTopics")
+            if not topics:
+                # Fallback for any account/device that doesn't return subTopics
+                device_type = dev.get("deviceType", "thermometer")
+                topics = [f"device/{device_type}/{dev['deviceId']}/pub"]
                 log.warning(
-                    f"device {dev['deviceId']} has no 'deviceModel' in the API "
-                    f"response — falling back to '{model}'. Keys present: "
-                    f"{sorted(dev.keys())}"
+                    f"device {dev['deviceId']} has no 'subTopics' in the API "
+                    f"response — falling back to {topics}"
                 )
-            topic = f"device/{model}/{dev['deviceId']}/pub"
-            client.subscribe(topic)
-            log.info(f"Subscribed to: {topic}")
+            for topic in topics:
+                client.subscribe(topic)
+                log.info(f"Subscribed to: {topic}")
 
     def handle_typhur_message(self, topic, payload):
         """Forward one Typhur cloud message to HA and keep probe discovery in sync.
