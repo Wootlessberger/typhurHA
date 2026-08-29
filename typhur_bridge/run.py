@@ -359,6 +359,14 @@ def device_sensor_defs(device_id, device_name):
             "state_class": "measurement",
             "value_template": "{{ value_json.cmdData.wifiRssi }}",
         },
+        {
+            "uid": f"typhur_{device_id}_last_updated",
+            "name": f"{device_name} Last Updated",
+            "unit": None,
+            "device_class": "timestamp",
+            "state_class": None,
+            "value_template": "{{ (value_json.deviceTime | int / 1000) | timestamp_local }}",
+        },
     ]
 
 
