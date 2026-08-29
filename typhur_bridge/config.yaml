@@ -1,6 +1,6 @@
 name: "Typhur Bridge - Wootlessberger"
 description: "Connects Typhur Sync Dual thermometer to Home Assistant via MQTT auto-discovery using your Typhur account credentials"
-version: "2.0.4"
+version: "2.0.5"
 slug: "typhur_bridge_wootlessberger"
 init: false
 arch:
