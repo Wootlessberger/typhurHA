@@ -345,7 +345,7 @@ def device_sensor_defs(device_id, device_name):
     return [
         {
             "uid": f"typhur_{device_id}_battery",
-            "name": f"{device_name} Battery",
+            "name": f"{device_name} Base Battery",
             "unit": "%",
             "device_class": "battery",
             "state_class": "measurement",
@@ -353,7 +353,7 @@ def device_sensor_defs(device_id, device_name):
         },
         {
             "uid": f"typhur_{device_id}_wifi",
-            "name": f"{device_name} WiFi Signal",
+            "name": f"{device_name} Base WiFi Signal",
             "unit": "dBm",
             "device_class": "signal_strength",
             "state_class": "measurement",
@@ -361,7 +361,7 @@ def device_sensor_defs(device_id, device_name):
         },
         {
             "uid": f"typhur_{device_id}_last_updated",
-            "name": f"{device_name} Last Updated",
+            "name": f"{device_name} Base Last Updated",
             "unit": None,
             "device_class": "timestamp",
             "state_class": None,
