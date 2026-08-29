@@ -275,8 +275,7 @@ def device_info_block(device):
 
 
 def probe_sensor_defs(device_id, device_name, color):
-    """Sensor definitions for a single probe, keyed by probeColor (probe1..probeN)."""
-    label = color.replace("probe", "Probe ")
+    label = probe_label(color)
     base = f"(value_json.cmdData.probes | selectattr('probeColor','eq','{color}') | list | first)"
     return [
         {
@@ -288,12 +287,28 @@ def probe_sensor_defs(device_id, device_name, color):
             "value_template": f"{{{{ (({base}.curTemperature | float) / 10 - 32) * 5 / 9 | round(1) }}}}",
         },
         {
+            "uid": f"typhur_{device_id}_{color}_temp_f",
+            "name": f"{device_name} {label} Temperature (F)",
+            "unit": "°F",
+            "device_class": "temperature",
+            "state_class": "measurement",
+            "value_template": f"{{{{ ({base}.curTemperature | float) / 10 | round(1) }}}}",
+        },
+        {
             "uid": f"typhur_{device_id}_{color}_ambient",
             "name": f"{device_name} {label} Ambient Temperature",
             "unit": "°C",
             "device_class": "temperature",
             "state_class": "measurement",
             "value_template": f"{{{{ (({base}.curAmbientTemperature | float) / 10 - 32) * 5 / 9 | round(1) }}}}",
+        },
+        {
+            "uid": f"typhur_{device_id}_{color}_ambient_f",
+            "name": f"{device_name} {label} Ambient Temperature (F)",
+            "unit": "°F",
+            "device_class": "temperature",
+            "state_class": "measurement",
+            "value_template": f"{{{{ ({base}.curAmbientTemperature | float) / 10 | round(1) }}}}",
         },
         {
             "uid": f"typhur_{device_id}_{color}_battery",
