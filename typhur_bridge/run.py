@@ -56,7 +56,18 @@ HA_DISCOVERY_PREFIX = "homeassistant"
 # setup never hammers Typhur's broker.
 RECONNECT_BACKOFF_MIN = 5
 RECONNECT_BACKOFF_MAX = 900
+# Typhur devices identify probes by an internal color code rather than a
+# number. Map known codes to friendly labels here; unrecognized colors
+# fall back to the raw code so new probe types still show up sensibly.
+PROBE_COLOR_LABELS = {
+    "dark": "Probe 1",
+    "bright": "Probe 2",
+}
 
+
+def probe_label(color):
+    return PROBE_COLOR_LABELS.get(color, color.replace("probe", "Probe "))
+    
 
 def load_options():
     with open(OPTIONS_FILE) as f:
